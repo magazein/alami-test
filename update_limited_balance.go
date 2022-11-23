@@ -2,21 +2,20 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 )
 
-func updateLimitedBalance(i int, data []string, target [][]string) {
-	// get balance
-	blc, err := strconv.Atoi(data[BeforeBalance])
-	if err != nil {
-		log.Fatal("Invalid data type for balance "+data[BeforeBalance], err)
-	}
-
+func updateLimitedBalance(i int, data []string, target [][]string) ([][]string, error) {
 	// get row number
 	row, err := strconv.Atoi(data[BeforeID])
 	if err != nil {
-		log.Fatal("Invalid data type for id "+data[BeforeID], err)
+		return nil, err
+	}
+
+	// get updated balance
+	blc, err := strconv.Atoi(target[row][AfterBalance])
+	if err != nil {
+		return nil, err
 	}
 
 	if row <= 100 {
@@ -24,4 +23,6 @@ func updateLimitedBalance(i int, data []string, target [][]string) {
 	}
 
 	target[row][AfterThread3] = fmt.Sprint(i)
+
+	return target, nil
 }

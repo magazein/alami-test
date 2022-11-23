@@ -2,15 +2,14 @@ package main
 
 import (
 	"encoding/csv"
-	"log"
 	"os"
 )
 
-func readCsvFile(filePath string) [][]string {
+func readCsvFile(filePath string) ([][]string, error) {
 	// open file
 	f, err := os.Open(filePath)
 	if err != nil {
-		log.Fatal("Unable to open file "+filePath, err)
+		return nil, err
 	}
 	defer f.Close()
 
@@ -21,17 +20,17 @@ func readCsvFile(filePath string) [][]string {
 	// read all file data
 	records, err := reader.ReadAll()
 	if err != nil {
-		log.Fatal("Unable to read CSV in "+filePath, err)
+		return nil, err
 	}
 
-	return records
+	return records, nil
 }
 
-func writeCsvFile(name string, data [][]string) {
+func writeCsvFile(name string, data [][]string) error {
 	// create file
 	f, err := os.Create(name)
 	if err != nil {
-		return
+		return err
 	}
 	defer f.Close()
 
@@ -41,8 +40,10 @@ func writeCsvFile(name string, data [][]string) {
 
 	// write data to file
 	if err = w.WriteAll(data); err != nil {
-		return
+		return err
 	}
+
+	return nil
 }
 
 func addToChan(channel chan []string, data [][]string) {

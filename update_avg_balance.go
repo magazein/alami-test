@@ -2,27 +2,26 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 )
 
-func updateAvgBalance(i int, data []string, target [][]string) {
+func updateAvgBalance(i int, data []string, target [][]string) ([][]string, error) {
 	// get balance
 	blc, err := strconv.Atoi(data[BeforeBalance])
 	if err != nil {
-		log.Fatal("Invalid data type for balance "+data[BeforeBalance], err)
+		return nil, err
 	}
 
 	// get previous balance
 	prevBlc, err := strconv.Atoi(data[BeforePrevBalance])
 	if err != nil {
-		log.Fatal("Invalid data type for previous balance "+data[BeforePrevBalance], err)
+		return nil, err
 	}
 
 	// get row number
 	row, err := strconv.Atoi(data[BeforeID])
 	if err != nil {
-		log.Fatal("Invalid data type for id "+data[BeforeID], err)
+		return nil, err
 	}
 
 	// count average
@@ -31,4 +30,6 @@ func updateAvgBalance(i int, data []string, target [][]string) {
 	// update data
 	target[row][AfterAvgBalance] = fmt.Sprint(avg)
 	target[row][AfterThread1] = fmt.Sprint(i)
+
+	return target, nil
 }
