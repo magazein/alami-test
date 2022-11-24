@@ -1,4 +1,4 @@
-package main
+package helper
 
 import (
 	"strconv"
@@ -6,22 +6,20 @@ import (
 )
 
 func Test_proceedAsync(t *testing.T) {
-	callback := func(i int, data []string, target [][]string) ([][]string, error) {
+	callback := func(i int, data []string) error {
 		// get row number
-		row, err := strconv.Atoi(data[0])
+		_, err := strconv.Atoi(data[0])
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		target[row][2] = "10"
-		return target, nil
+		return nil
 	}
 
 	type args struct {
 		concurrency int
-		callback    func(i int, data []string, target [][]string) ([][]string, error)
+		callback    func(i int, data []string) error
 		source      [][]string
-		target      [][]string
 	}
 	tests := []struct {
 		name    string
@@ -36,11 +34,6 @@ func Test_proceedAsync(t *testing.T) {
 					{"1", "test", "10"},
 					{"-", "test", "0"},
 				},
-				target: [][]string{
-					{"id", "name", "balance"},
-					{"1", "test", "0"},
-					{"2", "test", "0"},
-				},
 				callback: callback,
 			},
 			wantErr: true,
@@ -53,11 +46,6 @@ func Test_proceedAsync(t *testing.T) {
 					{"1", "test", "10"},
 					{"2", "test", "10"},
 				},
-				target: [][]string{
-					{"id", "name", "balance"},
-					{"1", "test", "0"},
-					{"2", "test", "0"},
-				},
 				callback: callback,
 			},
 			wantErr: false,
@@ -65,7 +53,7 @@ func Test_proceedAsync(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			errs := proceedAsync(tt.args.concurrency, tt.args.callback, tt.args.source, tt.args.target)
+			errs := ProceedAsync(tt.args.concurrency, tt.args.callback, tt.args.source)
 			if len(errs) > 0 != tt.wantErr {
 				t.Errorf("proceedAsync() error = %v, wantErr %v", errs, tt.wantErr)
 				return

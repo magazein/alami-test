@@ -1,19 +1,20 @@
-package main
+package helper
 
-import "sync"
+import (
+	"sync"
+)
 
-func proceedAsync(
+func ProceedAsync(
 	concurrency int,
-	callback func(i int, data []string, target [][]string) ([][]string, error),
+	callback func(i int, data []string) error,
 	source [][]string,
-	target [][]string,
 ) []error {
 	// count data
 	numberOfData := len(source)
 
 	// create buffered channel
 	var avgChan = make(chan []string, numberOfData)
-	go addToChan(avgChan, source)
+	go AddToChan(avgChan, source)
 
 	// create waitgroup
 	var wg sync.WaitGroup
@@ -26,7 +27,7 @@ func proceedAsync(
 		go func(in int) {
 			defer wg.Done()
 			for each := range avgChan {
-				_, err := callback(in, each, target)
+				err := callback(in, each)
 				if err != nil {
 					errs = append(errs, err)
 				}
